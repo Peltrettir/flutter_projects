@@ -1,15 +1,47 @@
 import 'package:flutter/material.dart';
 
+import './question.dart';
+import './answer.dart';
+
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  var questions = [
-    'What\'s yout favourite color?',
-    'What\'s yout favourite animal?',
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _MyAppState();
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+  var _questionIndex = 0;
+
+  var _questions = [
+    {
+      'questionText': 'What\'s your favourite color?',
+      'answers': ['Red', 'Green', 'Orange', 'Black']
+    },
+    {
+      'questionText': 'What\'s your favourite animal?',
+      'answers': ['Cat', 'Dog', 'fish', 'Rabbit']
+    },
+    {
+      'questionText': 'Who\'s your favourite instructor?',
+      'answers': ['Jhon', 'Jenny', 'James', 'Jolene']
+    },
   ];
-  var questionIndex = 0;
+
+  List<Widget> _answers = [];
+
+  _MyAppState() {
+    _answers = [
+      Question(
+        questionText: _questions[_questionIndex]['questionText'],
+      )
+    ];
+    _updateAnswers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,25 +49,18 @@ class MyApp extends StatelessWidget {
         home: Scaffold(
       appBar: AppBar(title: Text('My first app')),
       backgroundColor: Colors.white,
-      body: Column(
-        children: <Widget>[
-          Text('The question!'),
-          RaisedButton(
-              child: Text(questions.elementAt(0)), onPressed: answerQuestion),
-          RaisedButton(
-              child: Text(questions[1]),
-              onPressed: () {
-                print('Answer 2');
-              }),
-          RaisedButton(
-              child: Text(questions[questionIndex]),
-              onPressed: () => questionIndex++),
-        ],
-      ),
+      body: Column(children: _answers),
     ));
   }
 
   void answerQuestion() {
-    print('Question Answered!');
+    setState(() => _questionIndex = (_questionIndex + 1) % 3);
+    print(_questionIndex);
+  }
+
+  void _updateAnswers() {
+    for (var answer in _questions[_questionIndex]['answers']) {
+      _answers.add(Answer(answerQuestion, answer as String));
+    }
   }
 }
