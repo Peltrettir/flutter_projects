@@ -17,31 +17,20 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
 
-  var _questions = [
-    {
+  static const _questions = const [
+    const {
       'questionText': 'What\'s your favourite color?',
       'answers': ['Red', 'Green', 'Orange', 'Black']
     },
-    {
+    const {
       'questionText': 'What\'s your favourite animal?',
       'answers': ['Cat', 'Dog', 'fish', 'Rabbit']
     },
-    {
+    const {
       'questionText': 'Who\'s your favourite instructor?',
       'answers': ['Jhon', 'Jenny', 'James', 'Jolene']
     },
   ];
-
-  List<Widget> _answers = [];
-
-  _MyAppState() {
-    _answers = [
-      Question(
-        questionText: _questions[_questionIndex]['questionText'],
-      )
-    ];
-    _updateAnswers();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +38,23 @@ class _MyAppState extends State<MyApp> {
         home: Scaffold(
       appBar: AppBar(title: Text('My first app')),
       backgroundColor: Colors.white,
-      body: Column(children: _answers),
+      body: _questionIndex < _questions.length
+          ? Column(children: <Widget>[
+              Question(
+                  questionText: _questions[_questionIndex]['questionText']),
+              ...(_questions[_questionIndex]['answers'] as List<String>)
+                  .map((answerText) => Answer(answerQuestion, answerText)),
+            ])
+          : Column(
+              children: <Widget>[
+                Question(questionText: 'You did it!'),
+                Answer(() => setState(() => _questionIndex = 0), 'Try Again')
+              ],
+            ),
     ));
   }
 
   void answerQuestion() {
-    setState(() => _questionIndex = (_questionIndex + 1) % 3);
-    print(_questionIndex);
-  }
-
-  void _updateAnswers() {
-    for (var answer in _questions[_questionIndex]['answers']) {
-      _answers.add(Answer(answerQuestion, answer as String));
-    }
+    setState(() => _questionIndex++);
   }
 }
